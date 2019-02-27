@@ -5,8 +5,6 @@ sys.path.append("/path/to/lib")
 
 
 class SampleListener(Leap.Listener):
-    finger_names = ['Thumb', 'Index', 'Middle', 'Ring', 'Pinky']
-    bone_names = ['Metacarpal', 'Proximal', 'Intermediate', 'Distal']
     ser = serial.Serial('COM4', 9600)
     frame_cnt = 0
 
@@ -35,11 +33,13 @@ class SampleListener(Leap.Listener):
                 normal = hand.palm_normal
                 direction = hand.direction
 
+                # Bending thumb, or technically any one finger
                 shooting = False
                 extended = frame.fingers.extended()
                 if len(extended) == 4:
                     shooting = True
-
+                
+                # Verticle hand gesture
                 blocking = False
                 if (direction.pitch * Leap.RAD_TO_DEG) > 40:
                     blocking = True
@@ -50,7 +50,8 @@ class SampleListener(Leap.Listener):
                     direction.pitch * Leap.RAD_TO_DEG,
                     normal.roll * Leap.RAD_TO_DEG,
                     direction.yaw * Leap.RAD_TO_DEG)
-
+                
+                # Determine if player is shooting and if so, where they are pointing
                 if ((direction.yaw * Leap.RAD_TO_DEG) < -29) and ((direction.yaw * Leap.RAD_TO_DEG) > -45) and shooting:
                     self.sendHandInfo('a')
                 if ((direction.yaw * Leap.RAD_TO_DEG) < -15.25) and ((direction.yaw * Leap.RAD_TO_DEG) > -29) and shooting:
